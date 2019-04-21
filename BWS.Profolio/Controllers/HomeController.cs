@@ -19,15 +19,6 @@ namespace BWS.Profolio.Controllers
         {
             if (User.Identity.IsAuthenticated)
             {
-                // Get user profile from claims
-                var model = new GitHubClaimsViewModel()
-                {
-                    GitHubName = User.FindFirst(c => c.Type == ClaimTypes.Name)?.Value,
-                    GitHubLogin = User.FindFirst(c => c.Type == "urn:github:login")?.Value,
-                    GitHubUrl = User.FindFirst(c => c.Type == "urn:github:url")?.Value,
-                    GitHubAvatar = User.FindFirst(c => c.Type == "urn:github:avatar")?.Value
-                };
-
                 // Get user repositories using Octokit
                 string accessToken = await HttpContext.GetTokenAsync("access_token");
                 var github = new GitHubClient(
@@ -35,7 +26,16 @@ namespace BWS.Profolio.Controllers
                     new InMemoryCredentialStore(new Credentials(accessToken))
                 );
 
-                model.Repositories = await github.Repository.GetAllForCurrent();
+                var user = await github.User.Current();
+
+                var model = new GitHubClaimsViewModel()
+                {
+                    GitHubName = user.Name,
+                    GitHubLogin = user.Login,
+                    GitHubUrl = user.Url,
+                    GitHubAvatar = user.AvatarUrl,
+                    Repositories = await github.Repository.GetAllForCurrent()
+                };
 
                 return View(model);
             }

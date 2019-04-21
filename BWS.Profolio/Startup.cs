@@ -51,34 +51,28 @@ namespace BWS.Profolio
                 options.TokenEndpoint = "https://github.com/login/oauth/access_token";
                 options.UserInformationEndpoint = "https://api.github.com/user";
 
-                options.ClaimActions.MapJsonKey(ClaimTypes.NameIdentifier, "id");
-                options.ClaimActions.MapJsonKey(ClaimTypes.Name, "name");
-                options.ClaimActions.MapJsonKey("urn:github:login", "login");
-                options.ClaimActions.MapJsonKey("urn:github:url", "html_url");
-                options.ClaimActions.MapJsonKey("urn:github:avatar", "avatar_url");
+                //options.ClaimActions.MapJsonKey(ClaimTypes.NameIdentifier, "id");
+                //options.ClaimActions.MapJsonKey(ClaimTypes.Name, "name");
+                //options.ClaimActions.MapJsonKey("urn:github:login", "login");
+                //options.ClaimActions.MapJsonKey("urn:github:url", "html_url");
+                //options.ClaimActions.MapJsonKey("urn:github:avatar", "avatar_url");
 
-                options.Events = new OAuthEvents
-                {
-                    OnCreatingTicket = async context =>
-                    {
-                        var request = new HttpRequestMessage(HttpMethod.Get, context.Options.UserInformationEndpoint);
-                        request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", context.AccessToken);
+                //options.Events = new OAuthEvents
+                //{
+                //    OnCreatingTicket = async context =>
+                //    {
+                //        var request = new HttpRequestMessage(HttpMethod.Get, context.Options.UserInformationEndpoint);
+                //        request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                //        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", context.AccessToken);
 
-                        var response = await context.Backchannel.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, context.HttpContext.RequestAborted);
-                        response.EnsureSuccessStatusCode();
+                //        var response = await context.Backchannel.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, context.HttpContext.RequestAborted);
+                //        response.EnsureSuccessStatusCode();
 
-                        var user = JObject.Parse(await response.Content.ReadAsStringAsync());
+                //        var user = JObject.Parse(await response.Content.ReadAsStringAsync());
 
-                        context.RunClaimActions(user);
-                    },
-                    OnRemoteFailure = (context) =>
-                    {
-                        context.Response.Redirect(context.Properties.GetString("returnUrl"));
-                        context.HandleResponse();
-                        return Task.CompletedTask;
-                    }
-                };
+                //        context.RunClaimActions(user);
+                //    }
+                //};
             });
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
